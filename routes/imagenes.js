@@ -1,21 +1,22 @@
 var express = require('express');
-var fs = require('fs');
+const fs = require('fs');
 var app = express();
 
-app.get('/:tipo/:img', ( req, res, next ) => {
+const path = require('path');
 
-	var tipo = req.params.tipo;
-	var img = req.params.img;
+app.get('/:tipo/:img', (req, res, next) => {
 
-	var path = `./uploads/${ tipo }/${ img }`;
+    var tipo = req.params.tipo;
+    var img = req.params.img;
 
-	fs.exists( path, existe => {
-		if( !existe ) {
-			path = './assets/no-img.jpg';
-		}
+    var pathImagen = path.resolve(__dirname, `../uploads/${ tipo }/${ img }`);
 
-		res.sendfile(path);
-	})
-})
+    if (fs.existsSync(pathImagen)) {
+        res.sendFile(pathImagen);
+    } else {
+        var pathNoImage = path.resolve(__dirname, '../assets/no-img.jpg');
+        res.sendFile(pathNoImage);
+    }
+});
 
 module.exports = app;
